@@ -1,0 +1,86 @@
+
+<!-- saved from url=(0083)file:///C:/Users/George/AppData/Local/Temp/Rar$EXa15608.24042/supplement/index.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><style>
+body{margin-left:5%;margin-right:5%; font-family:verdana,helvetica,times}
+b.par{margin-left:3%;font-family:monospace;font-size:120%}
+center{font-size:120%}
+</style>
+</head><body bgcolor="white">
+<center>
+File description and minimal example of B-derivative code.
+</center><br>
+
+<center><b>George Council, Shai Revzen, Sam Burden<br> Representing and computing the B-derivative of an ECr vector field’s PCr flow</b></center>
+<hr>
+
+<h3>Requirements:</h3>
+The main algorithms are implemented in Python 3.6.9, though it should be backwards compatible with Python 2.7.5. The examples are inteded to be run in IPython 3, vers. 5.5.0, though should be executable as standalone python scripts, e.g. "python filename.py". The core alogrithms are contained in the module bderv.py, which should be imported (and therefore in the python path) for use.
+<hr>
+
+<h3>Files</h3>
+We will give a high-level overview of each file and its purpose;  A complete enuermation of file/class contents can be obtained with the 'pdoc' python packge, which can be installed via ``pip install pdoc''. E.g., an html can then be obtained via ``pdoc --html bderv2.py''
+<ol>
+<li>bderv.py<br>
+Numerical B-differential alogrithm. Contains classes "Bderv" and "BdervExtra". Each class instance minimally has internal states of F and DH, and methods to evalute the B-derivative.
+<ol>
+<li> Bderv -- direct implemetation of Alg. 2 -- __call__ method maps dx^- to dx^+
+</li> 
+<li>
+BdervExtra -- inherits Bderv; also possesses methods Bd and Bm.
+<ul>
+<li> Bd -- for given sequence w experienced by x+dx, computes matrix B_w via sequence of rank-1 updates.</li>
+<li> Bm -- for given sequence w experienced by x+dx, computes matrix B_w via simplicial map </li>
+</ul>
+</li>
+</ol>
+</li>
+<li>test-bd.py<br>
+Test suite for Bderv. Contains a collection examples. Each is executed by declaring the 'test' variable in line 42 to one of the following options, the running the file.
+<ul>
+<ul>
+<li>2d-contract</li> 
+Symmetric example from \S 3.1 of the text. 
+<li>2d-asym</li>
+Asymmetric example from \S 3.1 of the text.
+<li>2d-angled</li>
+2d example without orthgonal event surfaces:
+<li>2d-nonlinear</li> A non-linear 2d example that illustrates how to generate the sampled system from the nonlinear vector field.
+<li>3d-contract</li> A 3d-dimensional version of 2d-contract
+<li>3d-degen</li> A 3d example where the number of event surfaces, m, is less than the dimension, d, of state space, so that ker(DH) is non-trivial.
+</ul>
+</ul>
+</li>
+<li>chair.py<br> Code assocaited to Section 3, where a planar chair/table is striking a soft ground. 
+</li>
+<li>SOO.py<br> Second-order oscillator example from 'Event-selected vector fields yield piecewise differentiable flows' (10.1137/15M1016588) Section 8.2
+</li>
+<li>integro.py</li> Integration library used by chair.py to solve full nonlinear model. 
+</ol>
+
+
+<h3>Basic Usage</h3>
+The Bderv class constructor is requires the sampled vector field F as dictionary indexed by tuples (+/- 1, +/- ) so that e.g., F[(-1,1)] = F_(-1,1), and collection of surface normals DH as m x d array, where row mi is the surface normal for plane H_i. 
+
+Critically, this data must be for the sampled system -- for an example of how to generate the sampled data from the nonlinear vector field, see the text or the ``2d-nonlinear'' example in test-bd.py
+
+A minimal example is the following, where Bderv and BdervExtra are both shown:
+<br>
+<p style="margin-left:5%; margin-right:5%;">
+<code>
+        dim = 2 #systemdimension <br>
+        dl = +0.25 #vf parameter<br>
+        nu = .75   #vf parameter<br>
+        Fb = {(-1,-1): array([nu+dl,nu+dl]),
+          (-1,1) : array([nu+dl,nu-dl]),
+          (1,-1) : array([nu-dl,nu+dl]),
+          (1,1)  : array([nu-dl,nu-dl])} #sampled vf definition<br>
+        DH = eye(2) # two orthogonal event surfaces<br>
+        v = -array([0.25,0]) #test tangent vector<br>
+        B = Bderv(Fb,DH, dim)<br>
+        dv =B(v)#Alg. 2 method <br>
+        Bc = BdervExtra(Fb,DH, dim) <br>
+        B1,dv2 = Bc.Bm(v) #B is full matrix, and dv2=dv=dot(B1,v)=B(v)<br>
+</code>
+</p>
+<hr>
+</body></html>
