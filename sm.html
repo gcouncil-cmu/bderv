@@ -14,7 +14,10 @@ File description and minimal example of B-derivative code.
 <hr>
 
 <h3>Requirements:</h3>
-The main algorithms are implemented in Python 3.6.9, though it should be backwards compatible with Python 2.7.5. The examples are inteded to be run in IPython 3, vers. 5.5.0, though should be executable as standalone python scripts, e.g. "python filename.py". The core alogrithms are contained in the module bderv.py, which should be imported (and therefore in the python path) for use.
+The main algorithms are implemented in Python 3.6.9, though it should be backwards compatible with Python 2.7.5. The examples are inteded to be run in IPython 3, vers. 5.5.0, though should be executable as standalone python scripts, e.g. "python filename.py". The core alogrithms are contained in the module bderv2.py, which should be imported (and therefore in the python path) for use.
+<br>
+<br>
+The most up-to-date version of this code is available at : https://github.com/gcouncil-cmu/bderv.git
 <hr>
 
 <h3>Files</h3>
@@ -30,6 +33,9 @@ BdervExtra -- inherits Bderv; also possesses methods Bd and Bm.
 <ul>
 <li> Bd -- for given sequence w experienced by x+dx, computes matrix B_w via sequence of rank-1 updates.</li>
 <li> Bm -- for given sequence w experienced by x+dx, computes matrix B_w via simplicial map </li>
+     <ul>
+	   Important note: Bm has a signature of Bm(v, mode='orth'), so that the mode='orth' is the default. If the event surfaces encoded in DH are NOT ORTHGONOL, mode MUST be set to 'sol' to get the correct answer.
+	 </ul>
 </ul>
 </li>
 </ol>
@@ -50,8 +56,25 @@ Asymmetric example from \S 3.1 of the text.
 </ul>
 </ul>
 </li>
-<li>chair.py<br> Code assocaited to Section 3, where a planar chair/table is striking a soft ground. 
+<li>chair.py<br> Code assocaited to Section 3.2, where a planar chair/table is striking a soft ground. This file contains several sections:
+<ul>
+<li> Section 0: python class ``chair'' -- this is a numerical object that builds and simulates the dynamics of the chair hitting the ground.
+<li> Section 1: Builds b-derivatives for both the mode-depedent and mode-independent schemes.
+<li> Section 2: Evaluates associated B-derivates along linspace for Fig. in Section 3.3 of paper.
+<li> Section 3: A speed comparison for computing the varational equation of the flow -- we would expect a finite difference method to produce an matrix quite close to our elements for small time, yet will be much slower as such a method needs to consider at least 2^m points and integrate the nonlinear flow numerically.
+<br>
+E.g., the python variables will be in the namespace if you run in ipython, and should all coincide :
+<ul>
+<li> C.M12 -- exact matrix computed symbolically (same as chair-sym notebook).
+<li> M12 -- matrix from sequence of outer product -- Alg. 2.2
+<li> M12p -- matrix computed from simplicial algorithm used in proof; equal, but slower, to Alg 2.2
+<li> dfr  -- numerical jacobian of \phi(T,x + \delta x) - \phi(t,x); since this accounts for nonlinearities away from \rho, this will be close saltation matrix for small time near \rho, but less close further away.
+</ul>
+<li> Section 4: Plotting.
+</ul>
+
 </li>
+<li>chair-sym.ipynb <br> Python notebook that contains the symbolic computations of Section 3 in a tutorial form. </li>
 <li>SOO.py<br> Second-order oscillator example from 'Event-selected vector fields yield piecewise differentiable flows' (10.1137/15M1016588) Section 8.2
 </li>
 <li>integro.py</li> Integration library used by chair.py to solve full nonlinear model. 

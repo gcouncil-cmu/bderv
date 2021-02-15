@@ -15,7 +15,7 @@ from jacob import jacobian_cdas as jac
 
 
 
-
+####Section 0
 class chair(object):
    def __init__(self,m,I,th,k,b,l,IC,mm=False):
       self.m = m
@@ -237,7 +237,7 @@ class chair(object):
     self.fg = sym.lambdify([x,y,w,dx,dy,dw],Fe[(+1,+1)].T)
     self.M12 = self.M12.subs({I:self.I,m:self.m,x:self.rho[0],y:self.rho[1],w:self.rho[2],dx:self.rho[3],dy:self.rho[4],dw:self.rho[5], kappa:self.k,beta:self.b, th:self.th,l:self.l})
     self.M21 = self.M21.subs({I:self.I,m:self.m,x:self.rho[0],y:self.rho[1],w:self.rho[2],dx:self.rho[3],dy:self.rho[4],dw:self.rho[5], kappa:self.k,beta:self.b, th:self.th,l:self.l})
-
+#Section 1
 ##non-smooth ouptut -- mode-dependent change in Beta
 IC= array([0,1.,0,0,0,0])
 C = chair(1,1,pi/4,1,1,.5,IC,True)
@@ -255,8 +255,8 @@ Cs.build_sample()
 Bs = Bderv(Cs.Ft,C.DH,6)
 
 
-
-###evaluate B-derivative
+####Section 2
+###visual B-derivative
 dv = linspace(-.1,.1,101)
 dvv= zeros(len(dv))
 dvs = zeros(len(dv))
@@ -264,6 +264,8 @@ for ii in range(len(dv)):
     v = zeros(6);v[2] = dv[ii];
     dvv[ii] = B(v)[-2]
     dvs[ii] = Bs(v)[-2]
+    
+###Section 3
 ####jacobian comparison
 D = []
 def gf(IC): 
@@ -366,7 +368,7 @@ def draw_config(p,ax,act=False):
     ax, bdy_handle = draw_body(ax, p,COM)
     handles.update(bdy_handle)
     draw_leg(ax,p,act=act)
-    draw_dd(ax,p)
+    #draw_dd(ax,p)
     return ax,handles
 
 def draw_body(ax,p,COM):
@@ -400,12 +402,12 @@ def draw_leg(ax,p,act=False):
      l = linspace(0,ll,10)
      xhp1 = xc - .2
      xhp2 = xc + .2
-     ax.plot(xhp1+0*l,yc-l,color='orange')
-     ax.plot(xhp2+0*l,yc-l,color='orange')
+     ax.plot([xc,xhp1],[yc,yc-l[-1]],color='gray');ax.plot(xhp1,yc-l[-1],color='red',marker="o", ms='10')
+     ax.plot([xc,xhp2],[yc,yc-l[-1]],color='gray');ax.plot(xhp2,yc-l[-1],color='blue',marker="o",ms='10')
      ###actuator
-     if act:
-         ax.plot(xhp1+0, yc-ll/2, marker='s',color='blue')
-         ax.plot(xhp2+0, yc-ll/2, marker='s',color='blue')
+     #if act:
+     #    ax.plot(xhp1+0, yc-ll/2, marker='s',color='blue')
+     #    ax.plot(xhp2+0, yc-ll/2, marker='s',color='blue')
 
 
      
@@ -433,7 +435,7 @@ def draw_ground(ax, p, z=.25, depth=1, xc=0, width=5,gnd='c'):
       handles = {'ground':rect}
   elif gnd == 'c':
       t = linspace(-1,1,100)
-      arc = ax.plot(t, -.1*t*t, lw='5');plt.axis([-1,1,-1,1])
+      arc = ax.plot(t, -.1*t*t, lw='5',color='darkred');plt.axis([-1,1,-1,1])
       handles = {'ground':arc}
   else:
       raise
@@ -466,23 +468,23 @@ def spring(z0, z1, a=.2, b=.6, c=.2, h=1., p=4, N=100):
 
 
 fig,ax = plt.subplots(2,2)
-draw_config(p,ax=ax[0,0],act=True)
-draw_config(p,ax=ax[0,1],act=False)
+draw_config(p,ax=ax[0,0],act=True);ax[0,0].axis([-1,1,-0.3,1])
+draw_config(p,ax=ax[0,1],act=False);ax[0,1].axis([-1,1,-0.3,1])
 lw=5
 plt.subplot(2,2,3);
 plt.plot(dv[dv<=0],dvv[dv<=0],c='b',lw=lw);
 plt.plot(dv[dv>0],dvv[dv>0],c='r',lw=lw);
 plt.xlabel(r'$\delta \theta^-$');
 plt.ylabel(r'$\delta \dot{\theta}^+$');
-plt.axis([min(dv),max(dv),min(dvv),0.2]);
+plt.axis([min(dv),max(dv),min(dvv),0.05]);
 plt.title('PC^r output');
 
 plt.subplot(2,2,4);
 plt.plot(dv[dv<=0],dvs[dv<=0],c='b',lw=lw);
 plt.plot(dv[dv>0],dvs[dv>0],c='r',lw=lw);
 plt.xlabel(r'$\delta \theta^-$');
-plt.ylabel(r'$\delta \dot{\theta}^+$');
-plt.axis([min(dv),max(dv),min(dvv),0.2]);
+#plt.ylabel(r'$\delta \dot{\theta}^+$');
+plt.axis([min(dv),max(dv),min(dvv),0.05]);
 plt.title('C^r output')
 plt.show()
 

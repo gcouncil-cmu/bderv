@@ -1,3 +1,9 @@
+#
+# This software is copyrighted material (C) George Council 2021
+#
+# The library is provided under the GNU Public License version 3.0,
+#   as found at http://www.gnu.org/licenses/gpl-3.0-standalone.html
+#
 import pdb
 import itertools
 from itertools import product
