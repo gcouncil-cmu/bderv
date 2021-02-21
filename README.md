@@ -1,6 +1,6 @@
-<center>File description and minimal example of B-derivative code.</center>
-<center>#Representing and computing the B-derivative of an ECr vector field’s PCr flow#</center>
-<center>##*George Council, Shai Revzen, Sam Burden## *</center>
+
+# Representing and computing the B-derivative of an ECr vector field’s PCr flow#
+#### *George Council, Shai Revzen, Sam Burden#### *
 
 * * *
 
