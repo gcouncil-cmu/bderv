@@ -1,6 +1,7 @@
 
-# Representing and computing the B-derivative of an ECr vector field’s PCr flow#
-#### *George Council, Shai Revzen, Sam Burden#### *
+# Representing and computing the B-derivative of an ECr vector field’s PCr flow
+#### George Council, Shai Revzen, Sam Burden
+
 
 * * *
 
