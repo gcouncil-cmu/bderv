@@ -1,6 +1,7 @@
 from bderv2 import BdervExtra as Bderv
 from bderv2 import Bderv as Bbase
 from time import sleep
+from pylab import *
 import pdb
 
 def drawmat(M, t='M'):
@@ -39,7 +40,7 @@ def ball(Bc):
 
 if __name__=="__main__":
   #cases: 2d-contract, 2d-asym, 2d-angled, 2d-nonlinear, 3d-contract, 3d-degen, rigid -- note that the 'squishy chair' is in rigid2.py, not here
-  test = '2d-asym'
+  test = '2d-contract'
   if test == '2d-contract':
         dl = +0.25
         nu = .75
@@ -56,7 +57,7 @@ if __name__=="__main__":
            b=b.astype(int)
            b[b==0]=1
            return Fb[tuple(b)]
-        s = linspace(-.75,.4,7)
+        s = linspace(-.75,.6,7)
         X,Y = meshgrid(s,s)
         FX = zeros_like(X)
         FY = zeros_like(Y)
@@ -73,7 +74,7 @@ if __name__=="__main__":
         ms = 20
         figure()
         quiver(X,Y,FX,FY,color='gray',scale=20,width=.005,headwidth=5,headlength=5,headaxislength=5)
-        axis('scaled');show()
+        axis('scaled')
         axhline(0,color='r',lw=1.5*lw);axvline(0,color='b',lw=1.5*lw)
         DH = eye(2)
         v = -array([0.25,0])
@@ -112,7 +113,9 @@ if __name__=="__main__":
         ###
         #plot(U[:,0],U[:,1], lw=1, color='k',ls='-.')
         ###
-        drawmat(B,test)
+        plt.xticks([-.6,-.3,0,.3,.6],fontsize=30)
+        plt.yticks([-.6,-.3,0,.3,.6],fontsize=30)
+        drawmat(B,test);show()
   if test == '2d-angled':
         dl = +0.25
         nu = .75
@@ -139,7 +142,7 @@ if __name__=="__main__":
             fx,fy = f(b)
             FX[i,j] = fx
             FY[i,j] = fy
-        quiver(X,Y,FX,FY);show()
+        quiver(X,Y,FX,FY);
         plot(s,-.4/1.1*s,color='b')
         plot(s,-1.1/.4*s, color='orange')   
         v = -array([0.25,0])
@@ -153,7 +156,7 @@ if __name__=="__main__":
         print("x(1) + \delta x - x(1)" + str(x - 0.5*f(ones(2))));axis([min(s),max(s),min(s), max(s)])
         V,U = ball(Bc)
         plot(V[:,0],V[:,1]);plot(U[:,0],U[:,1])
-        drawmat(B, t=test)
+        drawmat(B, t=test);draw();show();
   if test == '2d-asym':
         dl = +0.25
         nu = .75
@@ -184,7 +187,7 @@ if __name__=="__main__":
         ms = 20
         figure()
         quiver(X,Y,FX,FY,color='gray',scale=20,width=.005,headwidth=5,headlength=5,headaxislength=5)
-        axis('scaled');show()
+        axis('scaled')
         axhline(0,color='r',lw=1.5*lw);axvline(0,color='b',lw=1.5*lw)
         DH = eye(2)
         v = -array([0.25,0])
@@ -192,9 +195,9 @@ if __name__=="__main__":
         dx,dv =Bc.Bof(v) 
         B,dv2 = Bc.Bm(v)
         xp=-.5*f(-ones(2))
-        plot([0,xp[0]],[0,xp[1]] ,'m.-',label='x(0)',color='purple',ms=ms,lw=lw);
+        plot([0,xp[0]],[0,xp[1]] ,'m.-',label='x(0)',color='purple',ms=ms,lw=lw);draw()
         x1=.5*f(ones(2))
-        plot([0,x1[0]],[0,x1[1]] ,'m.-',label='x(1)',color='purple',ms=ms,lw=lw);
+        plot([0,x1[0]],[0,x1[1]] ,'m.-',label='x(1)',color='purple',ms=ms,lw=lw);draw()
         print("dv: "  +str(dv)) 
         print("x(1) + \delta x - x(1)" + str(x - 0.5*f(ones(2))))
         ####
@@ -210,7 +213,7 @@ if __name__=="__main__":
         idx=argmax(diff(v2));v2=vstack([v2[idx:],v2[:idx]]);
         d1 = D[IDX1]
         d2 = D[IDX2];d2=vstack([d2[idx:],d2[:idx]]);
-        plot(v1[:,0],v1[:,1], lw=lw, ls='-',alpha=1, color='gold')
+        plot(v1[:,0],v1[:,1], lw=lw, ls='-',alpha=1, color='gold');draw()
         plot(d1[:,0],d1[:,1], lw=lw,ls='-', label='B_w',alpha=1,color='gold')
         plot(d2[:,0],d2[:,1], lw=4,ls=okl, label='B_w',alpha=0.5,color='gold')
         ###B_w'
@@ -224,7 +227,10 @@ if __name__=="__main__":
         ###
         #plot(U[:,0],U[:,1], lw=1, color='k',ls='-.')
         ###
-        drawmat(B, t=test)
+        plt.xticks([-.6,-.3,0,.3,.6],fontsize=30)
+        plt.yticks([-.6,-.3,0,.3,.6],fontsize=30)
+        drawmat(B, t=test);
+        draw();show();
   if test == '3d-degen':
         dl = +0.25
         nu = .75
@@ -358,7 +364,6 @@ if __name__=="__main__":
             H2[i,j] = h2(array([x,y]))
         quiver(X,Y,FX,FY,alpha=0.25);
         quiver(X,Y,FSX,FSY,alpha=1);axis('scaled');
-        show()
         contour(X,Y, H1, levels=[0],colors='blue',alpha=0.25)
         contour(X,Y, H2, levels=[0],colors='orange',alpha=0.25)
         plot(s, -s, color='red'); plot(s, 0*s,color='blue') ## linear 
@@ -376,7 +381,7 @@ if __name__=="__main__":
             plot(xi[0], xi[1], 'mo')
             plot(xf[0], xf[1], 'mx')
             plot([xi[0],xf[0]],[xi[1],xf[1]], '--',color='green')
-        drawmat(B, t=test)
+        drawmat(B, t=test);show()
 
   if test == '3d-contract':
         dim = 3

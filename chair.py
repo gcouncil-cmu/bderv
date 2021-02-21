@@ -126,7 +126,7 @@ class chair(object):
        '''
        t,y=self.air(IC,0,1,dt=0.001)
        idx= argmax(r_[self.H1(*y[-1,0:3]),self.H2(*y[-1,0:3])])
-       print("H at " + str(idx) +  " event")
+       #print("H"  + str(idx) +  " crossing event")
        ###
        def _h1(t,x):
           return self.H1(*x[0:3])
@@ -145,7 +145,7 @@ class chair(object):
           _,yy = self.ll.refine(_h1)
        ###
        if 'y1' in locals():
-          print('bl')
+          #print('bl')
           t2,y2 = self.bl(yy,0,self.blt)
           rt = t[-1]+t1[-1]+self.blt
           if Tr is not None:
@@ -239,25 +239,29 @@ class chair(object):
     self.M21 = self.M21.subs({I:self.I,m:self.m,x:self.rho[0],y:self.rho[1],w:self.rho[2],dx:self.rho[3],dy:self.rho[4],dw:self.rho[5], kappa:self.k,beta:self.b, th:self.th,l:self.l})
 #Section 1
 ##non-smooth ouptut -- mode-dependent change in Beta
+print("Building symbolic equations for forced")
 IC= array([0,1.,0,0,0,0])
 C = chair(1,1,pi/4,1,1,.5,IC,True)
 C.build()
 C.build_sys()
 C.build_sample()
+print("Building sampled forced system")
 B = Bderv(C.Ft,C.DH,6)
 
 
 ##smooth output -- no mode dependent forcing
+print("Building symbolic equations for unforced")
 Cs = chair(1,1,pi/4,1,1,.5,IC,False)
 Cs.build()
 Cs.build_sys()
 Cs.build_sample()
+print("Building sampled unforced system")
 Bs = Bderv(Cs.Ft,C.DH,6)
 
 
 ####Section 2
 ###visual B-derivative
-dv = linspace(-.1,.1,101)
+dv = linspace(-1,1,101)
 dvv= zeros(len(dv))
 dvs = zeros(len(dv))
 for ii in range(len(dv)):
@@ -275,7 +279,7 @@ def gf(IC):
    t,a = C.air.refine(_f)
    tt,b = C.bl(a,0,C.blt+.005) #dosh!
    Tf = Ta[-1] + tt[-1]
-   print(str(Tf))
+   #print(str(Tf))
    def _gf(x):
     t,y =C.go(x, Tr=Tf) 
     D.append(t[-1][-1]-Tf)
@@ -287,6 +291,7 @@ v = array([0,0,-.01,0,0,0])
 IC = C.rho + asfarray([0,.02,0,0,0,0])
 pp = gf(IC)     
 
+print("Begining timing tests...")
 import time
 ta = time.time()
 df = jac(pp, 1e-4*ones(6))
@@ -305,6 +310,9 @@ M1p = B.Bm(v, mode='sol') ##M1 better equal M1p equal C.M12!!!!
 S = dot(D2,dot(M1,D1))
 tee = time.time()
 t1 = time.time()
+print("Timing tests complete")
+print("Finite difference took " + str(tb-ta) + " seconds")
+print("B-derv took " + str(tee-te) + " seconds")
 
 
 
@@ -468,24 +476,39 @@ def spring(z0, z1, a=.2, b=.6, c=.2, h=1., p=4, N=100):
 
 
 fig,ax = plt.subplots(2,2)
-draw_config(p,ax=ax[0,0],act=True);ax[0,0].axis([-1,1,-0.3,1])
-draw_config(p,ax=ax[0,1],act=False);ax[0,1].axis([-1,1,-0.3,1])
-lw=5
-plt.subplot(2,2,3);
-plt.plot(dv[dv<=0],dvv[dv<=0],c='b',lw=lw);
-plt.plot(dv[dv>0],dvv[dv>0],c='r',lw=lw);
-plt.xlabel(r'$\delta \theta^-$');
-plt.ylabel(r'$\delta \dot{\theta}^+$');
-plt.axis([min(dv),max(dv),min(dvv),0.05]);
-plt.title('PC^r output');
+draw_config(p,ax=ax[0,0],act=True);ax[0,0].axis([-1,1,-0.3,1]);ax[0,0].set_yticklabels([]);ax[0,0].set_xticklabels([]);ax[0,0].tick_params(bottom=False,left=False)
+draw_config(p,ax=ax[0,1],act=False);ax[0,1].axis([-1,1,-0.3,1]);ax[0,1].set_yticklabels([]);ax[0,1].set_xticklabels([]);ax[0,1].tick_params(bottom=False,left=False)
 
-plt.subplot(2,2,4);
+
+
+
+lw=5
+fs=18
+plt.subplot(2,2,3);
 plt.plot(dv[dv<=0],dvs[dv<=0],c='b',lw=lw);
 plt.plot(dv[dv>0],dvs[dv>0],c='r',lw=lw);
-plt.xlabel(r'$\delta \theta^-$');
+#plt.xlabel(r'$\delta \theta^-$');
 #plt.ylabel(r'$\delta \dot{\theta}^+$');
 plt.axis([min(dv),max(dv),min(dvv),0.05]);
-plt.title('C^r output')
+#plt.title(r'$C^r$ output')
+plt.xticks([-1,-.5,0,.5,1],fontsize=fs)
+plt.yticks([-0.5  , -0.375, -0.25 , -0.125, -0.   ],fontsize=fs)
+#ax[1,1].set_yticklabels([])
+
+
+
+plt.subplot(2,2,4);
+plt.plot(dv[dv<=0],dvv[dv<=0],c='b',lw=lw);
+plt.plot(dv[dv>0],dvv[dv>0],c='r',lw=lw);
+#plt.xlabel(r'$\delta \theta^-$');
+#plt.ylabel(r'$\delta \dot{\theta}^+$');
+plt.axis([min(dv),max(dv),min(dvv),0.05]);
+plt.xticks([-1,-.5,0,.5,1],fontsize=fs)
+#plt.yticks(fontsize=15)
+#plt.title(r'$PC^r$ output');
+a = gca();a.set_yticklabels([])
+
 plt.show()
+plt.tight_layout()
 
 
